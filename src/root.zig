@@ -28,6 +28,7 @@ pub const App = struct {
     author: [*:0]const u8,
     version: [*:0]const u8,
     args: std.ArrayList(ArgData),
+    sys_args: [*:0] const u8,
 
     pub export fn new(
         name: [*:0]const u8,
@@ -64,6 +65,13 @@ pub const App = struct {
             arg
         );
         // TO DO.
+    }
+
+    pub export fn version_is() bool {
+        return arg_was_used(
+    }
+
+    pub export fn help_is() bool {
     }
 
 };
