@@ -13,15 +13,11 @@ const ArrayList = std.ArrayList;
 // this library.
 const errors = @import("err.zig");
 
-// Importing one of
-// the standard allocator.
-const allocator = std.heap.page_allocator;
-
 /// This function returns
 /// the length of a string
 /// with a null-terminator
 /// as an unsigned integer.
-pub export fn str_len(
+pub fn str_len(
     subject: [*:0]const u8
 ) usize {
     var len: usize = 0;
@@ -38,27 +34,34 @@ pub export fn str_len(
 /// An array of `u8`s
 /// is stored in a growable
 /// array.
-const String = struct {
+pub const String = struct {
     items: ArrayList(u8),
+    allocator: std.mem.Allocator,
 
     /// Instantiates this
     /// structure with
     /// an allocator
     /// and a pointer to
     /// a string.
-    pub export fn init(
+    pub fn init(
         subject: [*:0]const u8,
-        allocator: allocator
+        allocator: std.mem.Allocator
     ) !String {
-        const len: usize = str_len(
-        var char_list: ArrayList(u8)
+        const len: usize = str_len(subject);
+        var char_list: ArrayList(u8) = ArrayList(u8)
             .init(allocator);
-        defer
+        defer char_list.deinit();
         for (0..len) |i| {
             try char_list.append(subject[i]);
         }
         return String{
             .items = char_list
         };
+    }
+
+    /// A function to free the resources
+    /// taken by the internal `ArrayLis`.
+    pub fn deinit(self: *String) void {
+        self.items.deinit();
     }
 };

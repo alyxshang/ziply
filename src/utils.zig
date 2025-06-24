@@ -19,23 +19,23 @@ const string = @import("strings.zig");
 
 // Importing one of the standard library
 // allocators.
-const allocator = std.heap.page_allocator;
 
 /// A function to join a string into a growable
 /// array of `u8`s. If this operation is succesful,
 /// a `String` object is returned. If this operation
 /// fails, an error is returned.
-pub export fn join_chars(
+pub fn join_chars(
     joiner: u8,
-    subject: ArrayList(u8) 
-) String {
-    var res = ArrayList(String)
+    subject: ArrayList(u8),
+    allocator: std.mem.Allocator
+) string.String {
+    var res = ArrayList(string.String)
         .init(allocator);
-    for (subject.items, 0..) |item, i|{
+    for (subject.items) |item|{
         try res.append(joiner);
         try res.append(item);
     }
-    return result;
+    return res;
 }
 
 /// A function to split a string by a certain
@@ -43,11 +43,12 @@ pub export fn join_chars(
 /// operation is successful, a growable array is
 /// returned. If the operation fails, an error is 
 /// returned.
-pub export fn split_string(
+pub fn split_string(
     splitter: u8,
-    subject: [*:0]const u8
-) ArrayList(String) {
-    var str_list = ArrayList(String)
+    subject: [*:0]const u8,
+    allocator: std.mem.Allocator
+) ArrayList(string.String) {
+    var str_list = ArrayList(string.String)
         .init(allocator);
     const len = string.str_len(subject);
     var container = ArrayList(u8)
@@ -56,7 +57,7 @@ pub export fn split_string(
         const curr: u8 = subject[i];
         if (curr == splitter){
             try str_list.append(
-                join_chars('', container)
+                join_chars("", container)
             );
             container = ArrayList(u8)
                 .init(allocator);

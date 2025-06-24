@@ -2,7 +2,7 @@
 // Licensed under the FSL v1.
 
 /// Re-exporting the `app` module.
-pub usingnamespace @import("app.zig");
+//pub usingnamespace @import("app.zig");
 
 /// Re-exporting the `err` module.
 pub usingnamespace @import("err.zig");

@@ -14,11 +14,11 @@ pub const ParsedArg = struct {
     /// of the `ParsedArg`
     /// structure with the 
     /// supplied data.
-    pub export fn init(
+    pub fn init(
         name: [*:0]const u8,
         verb: [*:0]const u8,
         data: ?[*:0]const u8
-    ) Self {
+    ) ParsedArg {
         return ParsedArg{
             .name = name,
             .verb = verb,

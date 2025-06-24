@@ -4,7 +4,7 @@
 /// An error enumeration for
 /// getting and returning errors
 /// for Ziply functions.
-pub export const ZiplyErr = error {
+pub const ZiplyErr = error {
     ArgNotSet,
     AllocationErr
 };

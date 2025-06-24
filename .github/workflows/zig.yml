@@ -1,0 +1,35 @@
+on: [push]
+name: "Ziply CI"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Build and Test
+    steps:
+      - uses: actions/checkout@v3
+      - uses: mlugg/setup-zig@v1
+
+      - name: "Build the tests."
+        run: zig build test
+
+      - name: "Run the tests."
+        run: zig test src/tests.zig
+
+      - name: "Build the sample app."
+        run: zig build sample/src/main.zig
+
+      - name: "Run the sample app."
+        run: |
+          greet -v
+          greet --version
+          greet -h
+          greet --help
+          greet -g3 "Alyx"
+
+      - name: "Generate documentation."
+        run: zig build-lib -femit-docs src/root.zig
+
+      - name: "Deploy the documentation."
+        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        with:
+          branch: gh-pages
+          folder: docs
