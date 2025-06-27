@@ -13,22 +13,15 @@ const ArrayList = std.ArrayList;
 // this library.
 const errors = @import("err.zig");
 
-// Importing the module to handle
-// strings.
-const string = @import("strings.zig");
-
-// Importing one of the standard library
-// allocators.
-
 /// A function to join a string into a growable
 /// array of `u8`s. If this operation is succesful,
 /// a `String` object is returned. If this operation
 /// fails, an error is returned.
-pub fn join_chars(
+pub fn joinChars(
     joiner: u8,
     subject: ArrayList(u8),
     allocator: std.mem.Allocator
-) string.String {
+) !string.String {
     var res = ArrayList(string.String)
         .init(allocator);
     for (subject.items) |item|{
@@ -38,33 +31,35 @@ pub fn join_chars(
     return res;
 }
 
-/// A function to split a string by a certain
-/// character, this character is a `u8`. If the 
-/// operation is successful, a growable array is
-/// returned. If the operation fails, an error is 
-/// returned.
-pub fn split_string(
-    splitter: u8,
-    subject: [*:0]const u8,
-    allocator: std.mem.Allocator
-) ArrayList(string.String) {
-    var str_list = ArrayList(string.String)
-        .init(allocator);
-    const len = string.str_len(subject);
-    var container = ArrayList(u8)
-        .init(allocator);
-    for (0..len) |i| {
-        const curr: u8 = subject[i];
-        if (curr == splitter){
-            try str_list.append(
-                join_chars("", container)
-            );
-            container = ArrayList(u8)
-                .init(allocator);
-        }
-        else {
-            try container.append(curr);
-        }
+/// This function returns
+/// the length of a string
+/// with a null-terminator
+/// as an unsigned integer.
+pub fn strLen(
+    subject: [*:0]const u8
+) usize {
+    var len: usize = 0;
+    var copy = subject;
+    while (copy[0] != 0) {
+        len += 1;
+        copy += 1;
     }
-    return str_list;
+    return len;
+}
+
+pub fn arrayFromArgs(
+    allocator: std.mem.Allocator,
+    iterator: std.process.ArgIterator
+) !ArrayList(string.String) {
+    var result: ArrayList(String) = ArrayList(string.String)
+        .init(allocator);
+    for (iterator) |arg|{
+        var list = try std.ArrayList(u8).initCapacity(allocator, arg.len);
+        list.appendSlice(arg)
+            catch return err.ZiplyErr.AllocationErr;
+        const str: String = string.String.fromArray(list);
+        result.append(str)
+            catch return err.ZiplyErr.AllocationErr;
+    }
+    return result;
 }

@@ -13,22 +13,6 @@ const ArrayList = std.ArrayList;
 // this library.
 const errors = @import("err.zig");
 
-/// This function returns
-/// the length of a string
-/// with a null-terminator
-/// as an unsigned integer.
-pub fn str_len(
-    subject: [*:0]const u8
-) usize {
-    var len: usize = 0;
-    var copy = subject;
-    while (copy[0] != 0) {
-        len += 1;
-        copy += 1;
-    }
-    return len;
-}
-
 /// A structure to store
 /// a growable string.
 /// An array of `u8`s
@@ -36,7 +20,7 @@ pub fn str_len(
 /// array.
 pub const String = struct {
     items: ArrayList(u8),
-    allocator: std.mem.Allocator,
+    length: usize,
 
     /// Instantiates this
     /// structure with
@@ -55,8 +39,22 @@ pub const String = struct {
             try char_list.append(subject[i]);
         }
         return String{
-            .items = char_list
+            .items = char_list,
+            .length = char_list.len
         };
+    }
+
+    /// A function to create
+    /// a new instance of the
+    /// `String` structure
+    /// from an `ArrayList`
+    /// of 8-bit unsigned
+    /// integers.
+    pub fn fromArray(
+        self: *String,
+        array: ArrayLis(u8)
+    ) void {
+        self.items = array;
     }
 
     /// A function to free the resources

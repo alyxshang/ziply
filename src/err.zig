@@ -6,5 +6,7 @@
 /// for Ziply functions.
 pub const ZiplyErr = error {
     ArgNotSet,
-    AllocationErr
+    AllocationErr,
+    NoDataCaptured,
+    NoDataAccepted
 };

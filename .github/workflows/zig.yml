@@ -23,7 +23,9 @@ jobs:
           greet --version
           greet -h
           greet --help
-          greet -g3 "Alyx"
+          greet -r3 "Alyx"
+          greet --repeat 3 "Alyx"
+          greet repeat 3 "Alyx"
 
       - name: "Generate documentation."
         run: zig build-lib -femit-docs src/root.zig

@@ -15,6 +15,3 @@ pub usingnamespace @import("utils.zig");
 
 /// Re-exporting the `parsed` module.
 pub usingnamespace @import("parsed.zig");
-
-/// Re-exporting the `strings` module.
-pub usingnamespace @import("strings.zig");

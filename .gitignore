@@ -1,6 +1,14 @@
 .DS_Store
+
+# Top-level.
 zig-out
 .zig-cache
 /docs
 libroot.a
 libroot.a.o
+
+# Sample.
+/sample/zig-out
+/sample/.zig-cache
+/libroot.a
+/sample/libroot.a.o
