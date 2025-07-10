@@ -1,0 +1,19 @@
+.{
+    .name = .ziply,
+    .version = "0.1.0",
+    .fingerprint = 0x870e3299135901ab,
+    .minimum_zig_version = "0.14.1",
+    .dependencies = .{
+        .xian = .{
+            .url = "git+https://github.com/alyxshang/xian#fcdaf1d9d2caa79d7c6833834f6e68d9f2ca17db",
+            .hash = "xian-0.0.0-QnLqos9ZAADOA2ScRnhKSztFrkqOj4v_YbKZAjy4NC_x",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "LICENSE",
+        "README.md",
+    },
+}
