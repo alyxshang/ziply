@@ -15,27 +15,104 @@ const app = @import("app.zig");
 // from the standard library.
 const expect = std.testing.expect;
 
+// Importing the "ArrayList"
+// data structure from the
+// standard library because
+// lists will be needed.
+const ArrayList = std.ArrayList;
+
 // Testing the "App.init", "App.addArg",
 // and "ArgData.init" functions.
 test "Testing basic methods of the key data structures." {
-    var new_app = app.App.init(
+    var arg_list = ArrayList(xian.String)
+        .init(std.testing.allocator);
+    const arg_one = try xian.String.init(
+        "yeet", 
+        std.testing.allocator
+    );
+    try arg_list.append(arg_one);
+    var new_app = try app.App.init(
         "Test",
         "v.0.1.0",
         "Alyx Shang",
+        arg_list,
         std.testing.allocator
     );
     defer new_app.deinit();
-    try new_app.addArg(
-        "greet",
-        "Greets the user.",
-        false
-    );
     try new_app.addArg(
         "yeet",
         "Yeets the user.",
         false
     );
     try expect(new_app.arguments.items.len == 2);
+    for (arg_list.items) |item| {
+        item.deinit();
+    }
+    arg_list.deinit();
 }
 
+// Testing the "App.argUsed" function.
+test "Testing the \"App.argUsed\" function." {
+    var arg_list = ArrayList(xian.String)
+        .init(std.testing.allocator);
+    const arg_one = try xian.String.init(
+        "yeet", 
+        std.testing.allocator
+    );
+    try arg_list.append(arg_one);
+    var new_app = try app.App.init(
+        "Test",
+        "v.0.1.0",
+        "Alyx Shang",
+        arg_list,
+        std.testing.allocator
+    );
+    defer new_app.deinit();
+    try new_app.addArg(
+        "yeet",
+        "Yeets the user.",
+        false
+    );
+    try expect(new_app.argUsed("yeet"));
+}
 
+// Testing the "App.getArgData" function.
+test "Testing the \"App.getArgData\" function." {
+    var arg_list = ArrayList(xian.String)
+        .init(std.testing.allocator);
+    const arg_one = xian.String.init(
+        "yeet", 
+        std.testing.allocator
+    );
+    var arg_two = xian.String.init(
+        "Alyx", 
+        std.testing.allocator
+    );
+    try arg_list.append(arg_one);
+    try arg_list.append(arg_two);
+    var new_app = try app.App.init(
+        "Test",
+        "v.0.1.0",
+        "Alyx Shang",
+        arg_list,
+        std.testing.allocator
+    );
+    defer new_app.deinit();
+    try new_app.addArg(
+        "yeet",
+        "Yeets the user.",
+        true
+    );
+    const data = try new_app.getArgData("yeet");
+    try expect(
+        xian.compareSlices(
+            data.data, 
+            arg_two.asSlices()
+        )
+    );
+}
+
+// Testing the "App.versionIs" function.
+test "Testing the \"App.versionIs\" function." {
+
+}

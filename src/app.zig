@@ -95,9 +95,10 @@ pub const App = struct{
         var result = false;
         const parsed_args = parsed.parseArgs(
             self.arguments,
-            self.seralized,
+            self.serialized,
             self.allocator
-        );
+        )
+            catch return err.ZiplyErr.ParsingErr;
         defer parsed_args.deinit();
         for (parsed_args.items) |item| {
             if (
@@ -129,7 +130,7 @@ pub const App = struct{
         if (has_data and arg_was_set) {
             const parsed_args = parsed.parseArgs(
                 self.arguments,
-                self.seralized,
+                self.serialized,
                 self.allocator
             );
             defer parsed_args.deinit();
@@ -172,7 +173,7 @@ pub const App = struct{
     /// Returns a version
     /// string. If the operation
     /// fails, an error is returned.
-    pub fn version(
+    pub fn versionMsg(
         self: *App,
     ) !xian.String {
         var name_str = xian
@@ -185,7 +186,7 @@ pub const App = struct{
             .init(
                 self.version
             );
-        var author_str = xian
+        const author_str = xian
             .String
             .init(
                 self.author
@@ -194,8 +195,8 @@ pub const App = struct{
             catch err.ZiplyErr.WriteErr;
         version_str.appendSlice("\nby")
             catch err.ZiplyErr.WriteErr;
-       var str_array = ArrayList(String)
-            .init(allocator);
+       var str_array = ArrayList(xian.String)
+            .init(self.allocator);
         str_array.append(name_str)
             catch err.ZiplyErr.WriteErr;
         str_array.append(version_str)
@@ -205,7 +206,7 @@ pub const App = struct{
         const joiner = xian
             .String
             .init("");
-        var result = xian.joinStrings(
+        const result = xian.joinStrings(
             str_array,
             joiner,
             self.allocator
@@ -216,7 +217,7 @@ pub const App = struct{
     /// Returns a help string.
     /// If the operation fails,
     /// an error is returned.
-    pub fn help(
+    pub fn helpMsg(
         self: *App,
     ) !xian.String {
         var str_arr = ArrayList(xian.String)
@@ -228,8 +229,8 @@ pub const App = struct{
             str_arr.append(single)
                 catch return err.ZiplyErr.WriteErr;
         }
-        var result = xian.joinStrings(
-            str_array,
+        const result = xian.joinStrings(
+            str_arr,
             joiner,
             self.allocator
         );
@@ -244,7 +245,7 @@ pub const App = struct{
         self: *App
     ) void {
         self.arguments.deinit();
-        for (self.seralized.items) |*item| {
+        for (self.serialized.items) |*item| {
             item.deinit();
         }
     }
@@ -283,8 +284,8 @@ pub fn singleHelp(
         catch return err.ZiplyErr.WriteErr;
     str_arr.append(single)
         catch return err.ZiplyErr.WriteErr;
-    var joiner = xian.String.init("", allocator);
-    var new_str = joinStrings(str_arr, joiner,allocator)
+    const joiner = xian.String.init("", allocator);
+    const new_str = xian.joinStrings(str_arr, joiner,allocator)
         catch return err.ZiplyErr.WriteErr;
     return new_str;
 }

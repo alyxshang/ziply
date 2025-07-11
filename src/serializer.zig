@@ -28,11 +28,11 @@ pub fn serializeArgs(
     var arr = ArrayList(xian.String)
         .init(allocator);
     while (iterator.next()) |item| {
-        var new_str = xian
+        const new_str = xian
             .String
             .init(item);
         arr.append(new_str)
-            return err.ZiplyErr.WriteErr;
+            catch return err.ZiplyErr.WriteErr;
     }
     return arr;
 }

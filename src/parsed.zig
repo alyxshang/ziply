@@ -34,7 +34,7 @@ pub const ParsedArgument = struct {
     /// data structure and return
     /// this instance.
     pub fn init(
-        name: [*:8]const u8,
+        name: [*:0]const u8,
         captured: ?[*:0]const u8
     ) ParsedArgument {
         return ParsedArgument{
@@ -55,57 +55,54 @@ pub fn parseArgs(
     var result = ArrayList(ParsedArgument)
         .init(allocator);
     for (serialized.items, 0..) |item, idx| {
-        const one = item.get(0);
-        const two = item.get(1);
+        var copy = item;
+        const one = copy.get(0)
+            catch return err.ZiplyErr.ItemNotFound;
+        const two = copy.get(1)
+            catch return err.ZiplyErr.ItemNotFound;
         if (one == '-'){
-            const itemLen = item.len() - 1;
+            const itemLen = copy.len() - 1;
             for (1..(itemLen+1)) |i| {
-                const letter = item.get(i);
+                const curr_letter = copy.get(i)
+                    catch return err.ZiplyErr.ItemNotFound;
                 const arg_data = matchLetter(
-                    letter,
-                    allocator,
-                    arguments
-                );
+                        curr_letter,
+                        allocator,
+                        arguments
+                    )
+                    catch return err.ZiplyErr.ItemNotFound;
                 if (arg_data.has_data){
-                    const data = serialized.items[idx+i];
-                    const parsed = ParsedArgument.init(arg_data.name, data);
+                    var a_data = serialized.items[idx+i];
+                    const parsed = ParsedArgument.init(arg_data.name, a_data.asSlice());
                     result.append(parsed)
                         catch return err.ZiplyErr.WriteErr;
                 }
                 else {
-                    const letter = item.get(i);
-                    const arg_data = matchLetter(
-                        letter,
-                        allocaotr,
-                        arguments
-                    );
-                    const parsed = ParsedArgument(arg_data.name, null);
+                    const parsed = ParsedArgument.init(arg_data.name, null);
                     result.append(parsed)
                         catch return err.ZiplyErr.WriteErr;
                 }
             }
             if (two == '-'){
-                item.remove(0);
-                item.remove(0);
+                _ = copy.remove(0)
+                    catch return err.ZiplyErr.WriteErr;
+                _ = copy.remove(0)
+                    catch return err.ZiplyErr.WriteErr;
                 const arg_data = matchWord(
                     item.asSlice(),
                     allocator,
                     arguments
-                );
+                )
+                    catch return err.ZiplyErr.ItemNotFound;
                 if (arg_data.has_data){
-                    const data = serialized.items[idx+i];
-                    const parsed = ParsedArgument.init(arg_data.name, data);
+                    var a_data = serialized.items[idx+1];
+                    const parsed = ParsedArgument.init(arg_data.name, a_data.asSlice());
                     result.append(parsed)
                         catch return err.ZiplyErr.WriteErr;
                 }
                 else {
-                    const arg_data = matchLetter(
-                        letter,
-                        allocaotr,
-                        arguments
-                    );
-                    const parsed = ParsedArgument(arg_data.name, null);
-                    result.append(parsed)
+                   const parsed = ParsedArgument.init(arg_data.name, null);
+                   result.append(parsed)
                         catch return err.ZiplyErr.WriteErr;
                 }
                 
@@ -116,23 +113,19 @@ pub fn parseArgs(
         }
         else {
             const arg_data = matchWord(
-                item.asSlice(),
+                copy.asSlice(),
                 allocator,
                 arguments
-            );
+            )
+                catch return err.ZiplyErr.ItemNotFound;
             if (arg_data.has_data){
-                const data = serialized.items[idx+i];
-                const parsed = ParsedArgument.init(arg_data.name, data);
+                var a_data = serialized.items[idx+1];
+                const parsed = ParsedArgument.init(arg_data.name, a_data.asSlice());
                 result.append(parsed)
                     catch return err.ZiplyErr.WriteErr;
             }
             else {
-                const arg_data = matchLetter(
-                    letter,
-                    allocaotr,
-                    arguments
-                );
-                const parsed = ParsedArgument(arg_data.name, null);
+                const parsed = ParsedArgument.init(arg_data.name, null);
                 result.append(parsed)
                     catch return err.ZiplyErr.WriteErr;
             }
@@ -172,8 +165,8 @@ pub fn matchWord(
     word: [*:0]const u8,
     allocator: std.mem.Allocator,
     arguments: ArrayList(data.ArgData)
-) !ArgData {
-    var result = ArrayList(ArgData)
+) !data.ArgData {
+    var result = ArrayList(data.ArgData)
         .init(allocator);
     defer result.deinit();
     for (arguments.items) |arg| {
@@ -200,8 +193,8 @@ pub fn matchLetter(
     letter: u8,
     allocator: std.mem.Allocator,
     arguments: ArrayList(data.ArgData)
-) !ArgData {
-    var result = ArrayList(ArgData)
+) !data.ArgData {
+    var result = ArrayList(data.ArgData)
         .init(allocator);
     defer result.deinit();
     for (arguments.items) |arg| {
