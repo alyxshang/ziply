@@ -84,12 +84,12 @@ pub fn parseArgs(
                 }
             }
             if (two == '-'){
-                _ = copy.remove(0)
+                copy.remove(0)
                     catch return err.ZiplyErr.WriteErr;
-                _ = copy.remove(0)
+                copy.remove(0)
                     catch return err.ZiplyErr.WriteErr;
                 const arg_data = matchWord(
-                    item.asSlice(),
+                    copy.asSlice(),
                     allocator,
                     arguments
                 )

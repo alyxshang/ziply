@@ -8,5 +8,6 @@
 pub const ZiplyErr = error {
     WriteErr,
     ParsingErr,
-    ItemNotFound
+    ItemNotFound,
+    ArgSettingsErr
 };

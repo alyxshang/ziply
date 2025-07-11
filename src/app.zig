@@ -91,7 +91,7 @@ pub const App = struct{
     pub fn argUsed(
         self: *App,
         name: [*:0]const u8,
-    ) bool {
+    ) !bool {
         var result = false;
         const parsed_args = parsed.parseArgs(
             self.arguments,
@@ -103,7 +103,7 @@ pub const App = struct{
         for (parsed_args.items) |item| {
             if (
                 xian.compareSlices(item.name, name) and
-                data.argWasSet(self.arguments, name)
+                data.argWasSet(name, self.arguments)
             ){
                 result = true;
             }
@@ -124,26 +124,35 @@ pub const App = struct{
             self.arguments
         );
         const arg_was_set = data.argWasSet(
-            self.arguments,
-            name
+            name,
+            self.arguments
         );
         if (has_data and arg_was_set) {
             const parsed_args = parsed.parseArgs(
                 self.arguments,
                 self.serialized,
                 self.allocator
-            );
+            )
+                catch return err.ZiplyErr.ParsingErr;
             defer parsed_args.deinit();
             for (parsed_args.items) |item| {
                 if (xian.compareSlices(item.name, name)){
-                    if (item.data) |value| {
-                        return value;
+                    if (item.captured) |value| {
+                        const new_str = xian
+                            .String
+                            .init(
+                                value,
+                                self.allocator
+                        )
+                            catch return err.ZiplyErr.WriteErr;
+                        return new_str;
                     }
                     else {
-                        return null;
+                        return err.ZiplyErr.ArgSettingsErr;
                     }
                 }
             }
+            return err.ZiplyErr.ArgSettingsErr;
         }
         else {
             return err.ZiplyErr.ArgSettingsErr;

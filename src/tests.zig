@@ -45,7 +45,7 @@ test "Testing basic methods of the key data structures." {
         false
     );
     try expect(new_app.arguments.items.len == 2);
-    for (arg_list.items) |item| {
+    for (arg_list.items) |*item| {
         item.deinit();
     }
     arg_list.deinit();
@@ -73,21 +73,25 @@ test "Testing the \"App.argUsed\" function." {
         "Yeets the user.",
         false
     );
-    try expect(new_app.argUsed("yeet"));
+    const arg_used = try new_app.argUsed("yeet");
+    try expect(arg_used);
 }
 
 // Testing the "App.getArgData" function.
 test "Testing the \"App.getArgData\" function." {
     var arg_list = ArrayList(xian.String)
         .init(std.testing.allocator);
-    const arg_one = xian.String.init(
+    defer arg_list.deinit();
+    var arg_one = try xian.String.init(
         "yeet", 
         std.testing.allocator
     );
-    var arg_two = xian.String.init(
+    defer arg_one.deinit();
+    var arg_two = try xian.String.init(
         "Alyx", 
         std.testing.allocator
     );
+    defer arg_two.deinit();
     try arg_list.append(arg_one);
     try arg_list.append(arg_two);
     var new_app = try app.App.init(
@@ -104,10 +108,11 @@ test "Testing the \"App.getArgData\" function." {
         true
     );
     const data = try new_app.getArgData("yeet");
+    var copy = data;
     try expect(
         xian.compareSlices(
-            data.data, 
-            arg_two.asSlices()
+            copy.asSlice(), 
+            arg_two.asSlice()
         )
     );
 }

@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.1",
     .dependencies = .{
         .xian = .{
-            .url = "git+https://github.com/alyxshang/xian#fcdaf1d9d2caa79d7c6833834f6e68d9f2ca17db",
-            .hash = "xian-0.0.0-QnLqos9ZAADOA2ScRnhKSztFrkqOj4v_YbKZAjy4NC_x",
+            .url = "git+https://github.com/alyxshang/xian#4a922e753517eec1d5a812e8d0ee1c3e12b557ca",
+            .hash = "xian-0.0.0-QnLqoo5fAACFvRiVN2MPmBer-b_c_fJCUvqImhBbel1T",
         },
     },
     .paths = .{
